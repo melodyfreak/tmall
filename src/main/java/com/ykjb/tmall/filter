@@ -1,0 +1,190 @@
+public class BackServletFilter implements Filter(){
+      public void doFilter(ServletRequest req, ServletResponse res ,Filterchain chain)
+{
+        HttpServletRequest request= (HttpServletRequest)req;
+        HttpServletResponse response =(HttpServletReponse)res;
+        
+        String contextPath=request.getServletContext().getContextPath();
+        String url=request.getRequestURL();
+        url=StringUtil.remove(url,contextPath);
+        
+        if(url.startWith("/admin"){
+        String servletPath=StringUtil.subStringBetween(url,"_","_")+"servlet";
+        String method(StringUtil.subStringAfter(url,"_");
+        
+        request.setAttribute("method",method);
+        request.getRequestDispather("/"+servletPath).forward(request,response);
+        
+        chain.doFilter(request,response);
+        
+        
+        
+public abstrat class BaseBackServlet extends HttpServlet()
+{
+       public abstract String add(HttpServletRequest request,HttpServletResponse response,Page page);
+       public abstract String delete(HttoservketRequest request,HttpServletResponse response,Page page);
+       public abstract String edit(HttpServletRequest request,HttpSercletResponse response, Page page);
+       public abstract String update(HttpServletRequest request,HttpServletresponse response,Page page);
+       public abstract String list(HttpServletRequest request,HttpServletResponse response,Page page);
+       
+       protected CategoryDAO categoryDAO=new CategoryDAO();
+       
+       
+       public void service(HttpServletRequest request,HttpServletResponse response ){
+          try｛
+             try{
+             start=Integer.parseInt(request.getParameter("page.start");
+               }catch(Exception e){
+               }
+             try{
+             count=Integer.parseInt(request.getParameter("page.count");
+             }catch(Exception e ){
+             }
+             Page page=new Page(start,count);
+             
+             String method=request.getAttribute("method");
+             Method m=this.getClass(method,javax.lang.http.HttpServletRequest.class,javax.lang.http.HttpServletResponse.class,page.class);
+             String redirect=n.invoke(this,request,response,page).toString();
+             
+             if(redirect.startWith("@){
+             request.sendDirect(redirect.subString(1);
+             }else if(redirect.startWith("%"){
+             request.getWriter
+             }else(redirect.startWith(""){
+             request.getRequestDispather(redirect).forward(request,response);
+             }
+             
+             }catch(Exception e){
+               throw new RuntimeException();
+               }
+               
+             
+           
+       
+       }
+       
+ public class CategoryDAO(){
+    public int getTotal(){
+       int total=0;
+       try(Connection connection =DBUtil.getconnection();Statement statement=c.createStatrment();){
+           String sql="selete count(*) from category";
+           
+           ResultSet rs=statement.executeQuery(sql);
+           while(rs.next()){
+               total=rs.getInt(1);
+               
+           }
+       }catch(SQLException e){
+       e.
+       }
+       return total;
+       }
+    public void add(Category category）{
+    String sql="insert category values(null,?)";
+    try(Connection connection=DBUtil.getconnection();PreparedStatrment ps=connection.prepareStatrment(sql);){
+        ps.setString(1,category.getName());
+        
+        ps.execute();
+        ResuleSet rs=ps.getGenerateKey();
+        if(rs.next()){
+            int id=rs.getInt(1);
+            
+            category.setid(id);
+            }
+            }catch(SQLException e){
+            e.}
+         }
+     public void delete(int id){
+      try(Connection connection -DBUtil.getConnection();Statement statemtnt =connectino.createStatement(){
+      try(Connection connection =DBUtil.getConnection();Statemrnt statement=connection.createStatement();){
+           String sql="delete from category where id="+id;
+           statemtnt.execute(sql);
+           
+      }
+     
+     public List<Categroy> list(){
+      try(Connection connection =DBUtil.getConnection
+      List<Categroy> categoys=new ArryList();
+      String sql="select * from categroy order by desc limit(?,?)"
+      try(Connectuiob connection =DBUtil.gercOnnection();PreparedSraremetnrt ps=connection.prepareStaeemtnt(sql);){
+          ps.setInt(1,page.getStart());
+          ps.setInt(2,page.count());
+          ResultSet rs=ps.executeQuery();
+          while(rs.next()){
+             Categroy  categroy = new Categroy();
+             int id =rs.getInt(1);
+             String name=rs.getString(2);
+             category.setName(name);
+             categroy.setId(id);
+             categroys.add(categroy);
+          }
+          }catch(SQLException e){
+          
+          }
+          return categorys;
+         
+       
+       
+       
+public class Categoryservlet extends BaseBackServlet(){
+    public String add(HttpServletRequest request,HttpServletResponse response ,Page page){
+    Map<String,String> params=new HashMap<>();
+    InputStream is=super.parseload(request,params);
+    
+    String name=params.get("name");
+    Category category=new Category();
+    category.setName(name);
+    categoryDAO.add(category);
+    
+    File imageFolder=new File(request.getServletPath().getRealPath("img/category");
+    File file=new File(imageFolder,category.getId()+"jpg");
+    //将文件彻底转换为jpg格式的文件
+    return "/admin_category_list";
+    
+    public String delete(HttpServletRequets request,HttpServletResponse response ,Page page){
+    int id=Integer.parseInt(request,getParameter("id");
+    
+    categoryDAO.delete(id);
+    return "/admin_category_list";
+    
+    public String list(HttpServletRequest request,HttpServletResponse response,Page page){
+    List<Category> categorys=categoryDAO.list(page.getStart(),page.getCount());
+    int total=categoryDAO.getTotal();
+    page.setTotal(total);
+    
+    request.setAttribute("thec",categorys);
+    request.setAttribute("page",page);
+    
+    return "admin/listCategory.jsp";
+    
+    public String edit(HttpServletRequest request,HttpServletResponse response,Page page){
+    int id=Integer.parseInt(request.getParameter("id");
+    Category category=new Category();
+    categoryDAO.get(id);
+    
+    rquest.setAttribute("c",category);
+    
+    return "admin/editCategory.jsp";
+    }
+    
+    public String update(HttpServletRequest request,HttpServletResponse response ,Page page){
+    Map<String,String> params=new HashMap<>();
+    InputStream is=super.parasload(request,params);
+    
+    String name=params.get("name");
+    int id=params.get("id");
+    Category category=new Category();
+    category.setName(name);
+    category.setId(id);
+    categoryDAO.update(category);
+    
+    File imageFolder=new File(request.getServletContext().getRealPath("/img/category");
+    File file=new File(imageFolder,category.getId()+"jpg");
+    
+    //将文件彻底转为jpg格式的图片方法
+    return "admin_category_list";
+    }
+    
+    
+    
+    }
